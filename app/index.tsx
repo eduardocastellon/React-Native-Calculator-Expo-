@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { ReadFile, WriteToFile } from "@/history/history";
 
 //styles for buttons
 const styles = StyleSheet.create({
@@ -47,6 +48,14 @@ const styles = StyleSheet.create({
 });
 
 export default function Index() {
+
+  useEffect(() => {
+    const getHistoryData = async () => {
+      await ReadFile();
+    }
+    getHistoryData();
+  }, []);
+
   //inputs
   const [input1, setInput1] = useState<any>(null);
   const [input2, setInput2] = useState<any>(null);
@@ -90,22 +99,26 @@ export default function Index() {
     setOperator(x);
   }
 
-  const handleEquals = () => {
+  const handleEquals = async () => {
     if (inputField !== ""){
       let x = parseFloat(inputField);
       setInput2(x);
       switch (operator){
         case "/":
           setInput1(input1 / x);
+          await WriteToFile(input1, operator, x, input1 / x);
           break;
         case "x":
           setInput1(input1 * x);
+          await WriteToFile(input1, operator, x, input1 * x);
           break;
         case "-":
           setInput1(input1 - x);
+          await WriteToFile(input1, operator, x, input1 - x);
           break;
         case "+":
           setInput1(input1 + x);
+          await WriteToFile(input1, operator, x, input1 + x);
           break;
         default:
           return;
@@ -115,6 +128,7 @@ export default function Index() {
       setAnswer(true);
     }
   }
+
   const value: number | string = answer ? input1 : inputField || 0;
   return (
     <View style={styles.frame}>
@@ -147,6 +161,7 @@ export default function Index() {
         <Pressable style={[styles.button, styles.operator]} onPress={() => handleOperation("+")}><Text style={styles.text}>+</Text></Pressable>
       </View>
       <Link href={{ pathname: "/modal" }}><Text style={{ color: "white", textDecorationLine: "underline" }}>View History</Text></Link>
+      <Text style={{ color: "white" }}>gerdfgdfg</Text>
     </View>
   );
 }
